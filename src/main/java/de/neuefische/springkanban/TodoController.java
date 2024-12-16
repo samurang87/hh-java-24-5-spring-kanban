@@ -5,7 +5,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -20,30 +19,32 @@ public class TodoController {
         if (status != null) {
             return getTodoByStatus(status);
         }
-        return new ArrayList<>();
+        return todoSvc.getTodos();
     }
 
     private List<Todo> getTodoByStatus(Status status) {
-        return new ArrayList<>();
+        return todoSvc.getTodosByStatus(status);
     }
 
     @GetMapping("/todo/{id}")
     public Todo getTodoById(@PathVariable String id) {
-        return new Todo(id, "Test task", Status.OPEN);
+        return todoSvc.getTodoById(id);
     }
 
     @PostMapping("/todo")
     public ResponseEntity<String> createTodo(@RequestBody Todo todo) {
-        return ResponseEntity.status(HttpStatus.CREATED).body("x");
+        String id = todoSvc.createTodo(todo);
+        return ResponseEntity.status(HttpStatus.CREATED).body(id);
     }
 
-    @PutMapping("/todo")
-    public Todo editTodo(@RequestBody Todo todo) {
-        return todo;
+    @PutMapping("/todo/{id}")
+    public Todo editTodo(@PathVariable String id, @RequestBody Todo todo) {
+        return todoSvc.editTodo(id, todo);
     }
 
-    @DeleteMapping("/todos/{id}")
+    @DeleteMapping("/todo/{id}")
     public ResponseEntity<Void> deleteTodo(@PathVariable String id) {
+        todoSvc.deleteTodoById(id);
         return ResponseEntity.noContent().build();
     }
 }
