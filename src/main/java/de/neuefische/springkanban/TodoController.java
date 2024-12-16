@@ -20,7 +20,7 @@ public class TodoController {
 
     @GetMapping("/todo/{id}")
     public Todo getTodoById(@PathVariable String id) {
-        return new Todo(id);
+        return new Todo(id, "Test task", Status.OPEN);
     }
 
     @PostMapping("/todo")
