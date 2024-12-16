@@ -37,6 +37,12 @@ class SpringKanbanApplicationTests {
     }
 
     @Test
+    void getTodosByStatus_shouldReturnListOfTodos() throws Exception {
+        mvc.perform(get("/api/todo?status=OPEN"))
+                .andExpect(status().isOk());
+    }
+
+    @Test
     void getTodoById_shouldReturnTodo() throws Exception {
         mvc.perform(get("/api/todo/1"))
                 .andExpect(status().isOk());

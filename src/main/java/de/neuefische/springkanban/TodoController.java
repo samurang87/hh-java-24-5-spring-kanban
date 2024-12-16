@@ -13,8 +13,17 @@ import java.util.List;
 @RequiredArgsConstructor
 public class TodoController {
 
+    private final TodoService todoSvc;
+
     @GetMapping("/todo")
-    public List<Todo> getTodos() {
+    public List<Todo> getTodos(@RequestParam(required = false) Status status) {
+        if (status != null) {
+            return getTodoByStatus(status);
+        }
+        return new ArrayList<>();
+    }
+
+    private List<Todo> getTodoByStatus(Status status) {
         return new ArrayList<>();
     }
 
