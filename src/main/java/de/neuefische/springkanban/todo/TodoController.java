@@ -32,7 +32,7 @@ public class TodoController {
     }
 
     @PostMapping("/todo")
-    public ResponseEntity<String> createTodo(@RequestBody Todo todo) {
+    public ResponseEntity<String> createTodo(@RequestBody TodoDTO todo) {
         String id = todoSvc.createTodo(todo);
         return ResponseEntity.status(HttpStatus.CREATED).body(id);
     }

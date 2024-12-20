@@ -1,10 +1,7 @@
 package de.neuefische.springkanban;
 
 import de.neuefische.springkanban.ids.IdService;
-import de.neuefische.springkanban.todo.Status;
-import de.neuefische.springkanban.todo.Todo;
-import de.neuefische.springkanban.todo.TodoRepository;
-import de.neuefische.springkanban.todo.TodoService;
+import de.neuefische.springkanban.todo.*;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -53,7 +50,7 @@ public class TodoServiceTest {
         when(ids.generateID()).thenReturn("4");
         Todo newTodo = new Todo("4", "Take the trash out", Status.OPEN);
         when(todoRepo.save(newTodo)).thenReturn(newTodo);
-        Assertions.assertEquals("4", ts.createTodo(newTodo));
+        Assertions.assertEquals("4", ts.createTodo(new TodoDTO("Take the trash out", Status.OPEN)));
     }
 
     @Test

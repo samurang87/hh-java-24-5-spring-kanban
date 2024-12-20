@@ -25,7 +25,7 @@ public class TodoService {
         return todoRepo.findById(id).orElseThrow();
     }
 
-    public String createTodo(Todo todo) {
+    public String createTodo(TodoDTO todo) {
         Todo newTodo = new Todo(idSvc.generateID(), todo.description(), todo.status());
         todoRepo.save(newTodo);
         return newTodo.id();
