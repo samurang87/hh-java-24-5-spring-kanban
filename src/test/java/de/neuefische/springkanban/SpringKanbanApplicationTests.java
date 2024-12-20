@@ -11,8 +11,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -91,6 +90,15 @@ class SpringKanbanApplicationTests {
         mvc.perform(get("/api/todo/2"))
                 .andExpect(status().isOk())
                 .andExpect(content().json("{\"id\":\"2\",\"description\":\"Test task\",\"status\":\"OPEN\"}"));
+    }
+
+    @Test
+    void getTodoById_shouldReturnBadRequest() throws Exception {
+        mvc.perform(get("/api/todo/2"))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.status").value("BAD_REQUEST"))
+                .andExpect(jsonPath("$.message").value("An error occurred \uD83D\uDE40 No value present"))
+                .andExpect(jsonPath("$.timestamp").value(org.hamcrest.Matchers.matchesPattern("\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}.*")));
     }
 
     @Test
