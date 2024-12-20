@@ -96,8 +96,8 @@ class SpringKanbanApplicationTests {
     @Test
     void createTodo_shouldReturnCreated() throws Exception {
         MvcResult res = mvc.perform(post("/api/todo")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content("{\"description\":\"Some description\", \"status\":\"OPEN\"}"))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"description\":\"Some description\", \"status\":\"OPEN\"}"))
                 .andExpect(status().isCreated())
                 .andReturn();
 
@@ -118,8 +118,8 @@ class SpringKanbanApplicationTests {
         );
         todoRepo.insert(todo1);
         mvc.perform(put("/api/todo/1")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content("{\"description\":\"Brush teeth and floss\", \"status\":\"DONE\"}"))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"description\":\"Brush teeth and floss\", \"status\":\"DONE\"}"))
                 .andExpect(status().isOk())
                 .andExpect(content().json("{\"id\":\"1\",\"description\":\"Brush teeth and floss\",\"status\":\"DONE\"}"));
     }
