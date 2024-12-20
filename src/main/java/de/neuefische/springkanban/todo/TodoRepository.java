@@ -1,4 +1,4 @@
-package de.neuefische.springkanban;
+package de.neuefische.springkanban.todo;
 
 import org.springframework.data.mongodb.repository.MongoRepository;
 

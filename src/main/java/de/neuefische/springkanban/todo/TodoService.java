@@ -1,5 +1,6 @@
-package de.neuefische.springkanban;
+package de.neuefische.springkanban.todo;
 
+import de.neuefische.springkanban.ids.IdService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

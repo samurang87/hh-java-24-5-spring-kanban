@@ -1,5 +1,8 @@
 package de.neuefische.springkanban;
 
+import de.neuefische.springkanban.todo.Status;
+import de.neuefische.springkanban.todo.Todo;
+import de.neuefische.springkanban.todo.TodoRepository;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -1,4 +1,4 @@
-package de.neuefische.springkanban;
+package de.neuefische.springkanban.exc;
 
 import org.springframework.http.HttpStatus;
 

@@ -1,4 +1,4 @@
-package de.neuefische.springkanban;
+package de.neuefische.springkanban.ids;
 
 import org.springframework.stereotype.Service;
 
