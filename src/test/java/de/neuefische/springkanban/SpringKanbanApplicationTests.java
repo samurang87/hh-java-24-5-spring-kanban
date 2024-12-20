@@ -1,24 +1,35 @@
 package de.neuefische.springkanban;
 
+import de.neuefische.springkanban.spelling.SpellingChecker;
 import de.neuefische.springkanban.todo.Status;
 import de.neuefische.springkanban.todo.Todo;
 import de.neuefische.springkanban.todo.TodoRepository;
+import io.github.ollama4j.OllamaAPI;
+import io.github.ollama4j.utils.Options;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
+import java.io.IOException;
+
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.reset;
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @SpringBootTest
 @AutoConfigureMockMvc
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
+@Import(TestConfig.class)
 class SpringKanbanApplicationTests {
 
     @Autowired
@@ -27,8 +38,22 @@ class SpringKanbanApplicationTests {
     @Autowired
     private MockMvc mvc;
 
+    @Autowired
+    @Qualifier("testOllamaAPI")
+    private OllamaAPI ollamaAPI;
+
+    @Autowired
+    private SpellingChecker spellingChecker;
+
+
     @Test
     void contextLoads() {
+    }
+
+    @Test
+    void verifyMockWorks() throws Exception {
+        String result = spellingChecker.checkSpelling("test text");
+        Assertions.assertEquals("mocked response", result);
     }
 
     @Test
@@ -105,7 +130,30 @@ class SpringKanbanApplicationTests {
     }
 
     @Test
-    void createTodo_shouldReturnCreated() throws Exception {
+    void createTodo_shouldReturnCreated_anduseeditedtext() throws Exception {
+        MvcResult res = mvc.perform(post("/api/todo")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"description\":\"Some description\", \"status\":\"OPEN\"}"))
+                .andExpect(status().isCreated())
+                .andReturn();
+
+        Todo resTodo = todoRepo.findById(res.getResponse().getContentAsString()).orElseThrow();
+
+        Assertions.assertEquals("mocked response", resTodo.description());
+        Assertions.assertEquals(Status.OPEN, resTodo.status());
+        Assertions.assertFalse(resTodo.id().isEmpty(), "ID should not be empty");
+    }
+
+    @Test
+    void createTodo_shouldReturnCreated_anduseoriginaltext_whenollamathrowserror() throws Exception {
+        reset(ollamaAPI);
+        when(ollamaAPI.generate(
+                anyString(),
+                anyString(),
+                anyBoolean(),
+                any(Options.class)))
+                .thenThrow(new IOException("500 Internal Server Error"));
+
         MvcResult res = mvc.perform(post("/api/todo")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{\"description\":\"Some description\", \"status\":\"OPEN\"}"))

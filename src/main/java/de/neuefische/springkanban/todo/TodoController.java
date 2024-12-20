@@ -1,5 +1,7 @@
 package de.neuefische.springkanban.todo;
 
+import de.neuefische.springkanban.spelling.SpellingChecker;
+import de.neuefische.springkanban.spelling.SpellingCheckerException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,6 +15,7 @@ import java.util.List;
 public class TodoController {
 
     private final TodoService todoSvc;
+    private final SpellingChecker sc;
 
     @GetMapping("/todo")
     public List<Todo> getTodos(@RequestParam(required = false) Status status) {
@@ -33,7 +36,14 @@ public class TodoController {
 
     @PostMapping("/todo")
     public ResponseEntity<String> createTodo(@RequestBody TodoDTO todo) {
-        String id = todoSvc.createTodo(todo);
+        String description;
+        try {
+            description = sc.checkSpelling(todo.description());
+        } catch (SpellingCheckerException e) {
+            description = todo.description();
+            System.out.println("Spelling check failed: " + e.getMessage());
+        }
+        String id = todoSvc.createTodo(todo.withDescription(description));
         return ResponseEntity.status(HttpStatus.CREATED).body(id);
     }
 
