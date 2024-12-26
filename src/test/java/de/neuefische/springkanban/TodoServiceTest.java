@@ -73,4 +73,59 @@ public class TodoServiceTest {
         verify(todoRepo).delete(todo);
     }
 
+    @Test
+    void undo_deletesCreatedTodo() {
+        TodoService ts = new TodoService(todoRepo, ids);
+        when(ids.generateID()).thenReturn("4");
+        Todo newTodo = new Todo("4", "Take the trash out", Status.OPEN);
+        when(todoRepo.save(newTodo)).thenReturn(newTodo);
+        ts.createTodo(new TodoDTO("Take the trash out", Status.OPEN));
+
+        ts.undo();
+        verify(todoRepo).delete(newTodo);
+
+        ts.redo();
+        verify(todoRepo, times(2)).save(newTodo);
+    }
+
+    @Test
+    void undo_bringsBackUneditedTodo() {
+        TodoService ts = new TodoService(todoRepo, ids);
+        Todo existingTodo = new Todo("2", "Do laundry", Status.IN_PROGRESS);
+        TodoDTO updatedTodoDTO = new TodoDTO( "Do laundry", Status.DONE);
+        Todo updatedTodo = new Todo("2", "Do laundry", Status.DONE);
+        when(todoRepo.findById("2")).thenReturn(java.util.Optional.of(existingTodo));
+        when(todoRepo.save(updatedTodo)).thenReturn(updatedTodo);
+        when(todoRepo.save(existingTodo)).thenReturn(existingTodo);
+        ts.editTodo("2", updatedTodoDTO);
+
+        ts.undo();
+        verify(todoRepo).save(existingTodo);
+
+        ts.redo();
+        verify(todoRepo, times(2)).save(updatedTodo);
+
+    }
+
+    @Test
+    void undo_bringsBackDeletedTodo() {
+        TodoService ts = new TodoService(todoRepo, ids);
+        Todo todo = new Todo("2", "Do laundry", Status.IN_PROGRESS);
+        when(todoRepo.findById("2")).thenReturn(java.util.Optional.of(todo));
+        ts.deleteTodoById("2");
+        ts.undo();
+        verify(todoRepo).save(todo);
+
+        ts.redo();
+        verify(todoRepo, times(2)).delete(todo);
+    }
+
+    @Test
+    void undo_doesNothingIfUndoStackIsEmpty() {
+        TodoService ts = new TodoService(todoRepo, ids);
+        ts.undo();
+        verify(todoRepo, never()).delete(any());
+        verify(todoRepo, never()).save(any());
+    }
+
 }
