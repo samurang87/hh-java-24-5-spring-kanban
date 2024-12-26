@@ -5,6 +5,7 @@ import de.neuefische.springkanban.todo.Status;
 import de.neuefische.springkanban.todo.Todo;
 import de.neuefische.springkanban.todo.TodoRepository;
 import io.github.ollama4j.OllamaAPI;
+import io.github.ollama4j.models.response.OllamaResult;
 import io.github.ollama4j.utils.Options;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -131,17 +132,40 @@ class SpringKanbanApplicationTests {
 
     @Test
     void createTodo_shouldReturnCreated_anduseeditedtext() throws Exception {
+        String description = "Some description";
+
+        when(ollamaAPI.generate(
+                anyString(),
+                anyString(),
+                anyBoolean(),
+                any(Options.class)))
+                .thenReturn(new OllamaResult(
+                        description,
+                        0,
+                        200));
+
+
         MvcResult res = mvc.perform(post("/api/todo")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"description\":\"Some description\", \"status\":\"OPEN\"}"))
+                        .content("{\"description\":\"" + description + "\", \"status\":\"OPEN\"}"))
                 .andExpect(status().isCreated())
                 .andReturn();
 
         Todo resTodo = todoRepo.findById(res.getResponse().getContentAsString()).orElseThrow();
 
-        Assertions.assertEquals("mocked response", resTodo.description());
+        Assertions.assertEquals(description, resTodo.description());
         Assertions.assertEquals(Status.OPEN, resTodo.status());
         Assertions.assertFalse(resTodo.id().isEmpty(), "ID should not be empty");
+
+        // Check undo endpoint
+        mvc.perform(post("/api/undo"))
+                .andExpect(status().isNoContent());
+        Assertions.assertTrue(todoRepo.findById(resTodo.id()).isEmpty());
+
+        // Check redo endpoint
+        mvc.perform(post("/api/redo"))
+                .andExpect(status().isNoContent());
+        Assertions.assertFalse(todoRepo.findById(resTodo.id()).isEmpty());
     }
 
     @Test
@@ -170,6 +194,18 @@ class SpringKanbanApplicationTests {
     @Test
     void editTodo_shouldReturnChangedTodo() throws Exception {
 
+        String description = "Brush teeth and floss";
+
+        when(ollamaAPI.generate(
+                anyString(),
+                anyString(),
+                anyBoolean(),
+                any(Options.class)))
+                .thenReturn(new OllamaResult(
+                        description,
+                        0,
+                        200));
+
         Todo todo1 = new Todo(
                 "1",
                 "Brush teeth",
@@ -178,9 +214,22 @@ class SpringKanbanApplicationTests {
         todoRepo.insert(todo1);
         mvc.perform(put("/api/todo/1")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"description\":\"Brush teeth and floss\", \"status\":\"DONE\"}"))
+                        .content("{\"description\":\"" + description + "\", \"status\":\"DONE\"}"))
                 .andExpect(status().isOk())
-                .andExpect(content().json("{\"id\":\"1\",\"description\":\"mocked response\",\"status\":\"DONE\"}"));
+                .andExpect(content().json("{\"id\":\"1\",\"description\":\"" + description + "\",\"status\":\"DONE\"}"));
+
+        // Check undo endpoint
+        mvc.perform(post("/api/undo"))
+                .andExpect(status().isNoContent());
+        Todo resTodo = todoRepo.findById("1").orElseThrow();
+        Assertions.assertEquals("Brush teeth", resTodo.description());
+
+        // Check redo endpoint
+        mvc.perform(post("/api/redo"))
+                .andExpect(status().isNoContent());
+        resTodo = todoRepo.findById("1").orElseThrow();
+        Assertions.assertEquals(description, resTodo.description());
+
     }
 
     @Test
@@ -220,6 +269,16 @@ class SpringKanbanApplicationTests {
         mvc.perform(delete("/api/todo/1"))
                 .andExpect(status().isNoContent());
 
+        Assertions.assertTrue(todoRepo.findById("1").isEmpty());
+
+        // Check undo endpoint
+        mvc.perform(post("/api/undo"))
+                .andExpect(status().isNoContent());
+        Assertions.assertFalse(todoRepo.findById("1").isEmpty());
+
+        // Check redo endpoint
+        mvc.perform(post("/api/redo"))
+                .andExpect(status().isNoContent());
         Assertions.assertTrue(todoRepo.findById("1").isEmpty());
     }
 }

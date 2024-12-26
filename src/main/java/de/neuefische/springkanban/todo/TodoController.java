@@ -64,4 +64,16 @@ public class TodoController {
         todoSvc.deleteTodoById(id);
         return ResponseEntity.noContent().build();
     }
+
+    @PostMapping("/undo")
+    public ResponseEntity<Void>undo() {
+        todoSvc.undo();
+        return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/redo")
+    public ResponseEntity<Void> redo() {
+        todoSvc.redo();
+        return ResponseEntity.noContent().build();
+    }
 }
