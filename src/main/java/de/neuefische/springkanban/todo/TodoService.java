@@ -31,7 +31,7 @@ public class TodoService {
         return newTodo.id();
     }
 
-    public Todo editTodo(String id, Todo todo) {
+    public Todo editTodo(String id, TodoDTO todo) {
         Todo existingTodo = todoRepo.findById(id).orElseThrow();
         Todo updatedTodo = existingTodo
                 .withDescription(todo.description())

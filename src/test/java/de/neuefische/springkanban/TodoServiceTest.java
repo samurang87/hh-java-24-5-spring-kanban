@@ -57,10 +57,11 @@ public class TodoServiceTest {
     void editTodo_returnsUpdatedTodo() {
         TodoService ts = new TodoService(todoRepo, ids);
         Todo existingTodo = new Todo("2", "Do laundry", Status.IN_PROGRESS);
+        TodoDTO updatedTodoDTO = new TodoDTO( "Do laundry", Status.DONE);
         Todo updatedTodo = new Todo("2", "Do laundry", Status.DONE);
         when(todoRepo.findById("2")).thenReturn(java.util.Optional.of(existingTodo));
         when(todoRepo.save(updatedTodo)).thenReturn(updatedTodo);
-        Assertions.assertEquals(updatedTodo, ts.editTodo("2", updatedTodo));
+        Assertions.assertEquals(updatedTodo, ts.editTodo("2", updatedTodoDTO));
     }
 
     @Test

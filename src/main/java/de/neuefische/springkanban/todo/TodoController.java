@@ -48,8 +48,15 @@ public class TodoController {
     }
 
     @PutMapping("/todo/{id}")
-    public Todo editTodo(@PathVariable String id, @RequestBody Todo todo) {
-        return todoSvc.editTodo(id, todo);
+    public Todo editTodo(@PathVariable String id, @RequestBody TodoDTO todo) {
+        String description;
+        try {
+            description = sc.checkSpelling(todo.description());
+        } catch (SpellingCheckerException e) {
+            description = todo.description();
+            System.out.println("Spelling check failed: " + e.getMessage());
+        }
+        return todoSvc.editTodo(id, todo.withDescription(description));
     }
 
     @DeleteMapping("/todo/{id}")

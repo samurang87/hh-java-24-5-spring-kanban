@@ -180,6 +180,31 @@ class SpringKanbanApplicationTests {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{\"description\":\"Brush teeth and floss\", \"status\":\"DONE\"}"))
                 .andExpect(status().isOk())
+                .andExpect(content().json("{\"id\":\"1\",\"description\":\"mocked response\",\"status\":\"DONE\"}"));
+    }
+
+    @Test
+    void editTodo_shouldReturnChangedTodo_anduseoriginaltext_whenollamathrowserror() throws Exception {
+
+        Todo todo1 = new Todo(
+                "1",
+                "Brush teeth",
+                Status.OPEN
+        );
+        todoRepo.insert(todo1);
+
+        reset(ollamaAPI);
+        when(ollamaAPI.generate(
+                anyString(),
+                anyString(),
+                anyBoolean(),
+                any(Options.class)))
+                .thenThrow(new IOException("500 Internal Server Error"));
+
+        mvc.perform(put("/api/todo/1")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"description\":\"Brush teeth and floss\", \"status\":\"DONE\"}"))
+                .andExpect(status().isOk())
                 .andExpect(content().json("{\"id\":\"1\",\"description\":\"Brush teeth and floss\",\"status\":\"DONE\"}"));
     }
 
