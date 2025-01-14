@@ -2,6 +2,7 @@ import './App.css'
 import TodoColumn, {fetchTodos} from "./components/TodoColumn.tsx";
 import {useEffect, useState} from "react";
 import {Todo} from "./types/Todo.tsx";
+import AddTodoForm from "./components/AddTodo.tsx";
 
 function App() {
 
@@ -15,6 +16,10 @@ function App() {
         fetchData();
     }, []);
 
+    const handleTodoAdded = (newTodo: Todo) => {
+        setTodoList([...todoList, newTodo]);
+    };
+
     const openTodos = todoList.filter(todo => todo.status === 'OPEN');
     const inProgressTodos = todoList.filter(todo => todo.status === 'IN_PROGRESS');
     const doneTodos = todoList.filter(todo => todo.status === 'DONE');
@@ -27,6 +32,7 @@ function App() {
             <TodoColumn todoList={inProgressTodos}/>
             <TodoColumn todoList={doneTodos}/>
         </div>
+        <AddTodoForm onTodoAdded={handleTodoAdded} />
     </>
   )
 }
