@@ -1,9 +1,9 @@
 import {Status, Todo} from '../types/Todo';
 import {TodoCardComponent} from './TodoCard';
 import todos from '../../public/payloadListTodo.json';
-import {useEffect, useState} from "react";
+import './TodoColumn.css';
 
-function fetchTodos(): Todo[] {
+export function fetchTodos(): Todo[] {
     return todos.map(todo => {
         return {
             id: todo.id,
@@ -13,16 +13,14 @@ function fetchTodos(): Todo[] {
     });
 }
 
-function TodoColumn() {
-    const [todoList, setTodoList] = useState<Todo[]>([]);
+type TodoColumnProps = {
+    todoList: Todo[];
+};
 
-    useEffect(() => {
-        const todos = fetchTodos();
-        setTodoList(todos);
-    }, []);
+function TodoColumn({ todoList }: TodoColumnProps) {
 
     return (
-        <div>
+        <div className="todo-column">
             {todoList.map(todo => (
                 <TodoCardComponent key={todo.id} todo={todo}/>
             ))}
