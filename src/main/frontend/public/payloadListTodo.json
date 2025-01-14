@@ -1,0 +1,52 @@
+[
+  {
+    "id": "1",
+    "description": "Brush teeth",
+    "status": "OPEN"
+  },
+  {
+    "id": "2",
+    "description": "Do laundry",
+    "status": "DONE"
+  },
+  {
+    "id": "3",
+    "description": "Buy groceries",
+    "status": "IN_PROGRESS"
+  },
+  {
+    "id": "4",
+    "description": "Clean the house",
+    "status": "OPEN"
+  },
+  {
+    "id": "5",
+    "description": "Finish project report",
+    "status": "IN_PROGRESS"
+  },
+  {
+    "id": "6",
+    "description": "Call mom",
+    "status": "DONE"
+  },
+  {
+    "id": "7",
+    "description": "Pay bills",
+    "status": "OPEN"
+  },
+  {
+    "id": "8",
+    "description": "Read a book",
+    "status": "IN_PROGRESS"
+  },
+  {
+    "id": "9",
+    "description": "Exercise",
+    "status": "DONE"
+  },
+  {
+    "id": "10",
+    "description": "Plan vacation",
+    "status": "OPEN"
+  }
+]
