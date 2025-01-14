@@ -8,8 +8,11 @@ function App() {
     const [todoList, setTodoList] = useState<Todo[]>([]);
 
     useEffect(() => {
-        const todos = fetchTodos();
-        setTodoList(todos);
+        const fetchData = async () => {
+            const todos = await fetchTodos();
+            setTodoList(todos);
+        };
+        fetchData();
     }, []);
 
     const openTodos = todoList.filter(todo => todo.status === 'OPEN');
